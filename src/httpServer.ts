@@ -147,4 +147,19 @@ export class httpServer {
             }*/
         }
     }
+
+    // What deletes files and folders
+    async deleteFileHandler(req, res){
+        const decodedURL = decodeURI(req.url)
+        const file = this.bot.getFile(decodedURL)
+        if (file) {
+            await this.bot.rm(file)
+            res.writeHead(200)
+            res.end()
+        } else {
+            await this.bot.rmdir(decodedURL)
+            res.writeHead(200)
+            res.end()
+        }
+    }
 }
