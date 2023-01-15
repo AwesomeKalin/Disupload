@@ -6,14 +6,17 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "del build /Q && del dist /Q && tsc && pnpm run minify",
-    "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/util.js ./build/util.js"
+    "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/util.js ./build/util.js && jsmin -o ./dist/entry/baseEntry.js ./build/entry/baseEntry.js && jsmin -o ./dist/entry/directoryEntry.js ./build/entry/directoryEntry.js && jsmin -o ./dist/entry/entryType.js ./build/entry/entryType.js && jsmin -o ./dist/entry/file.js ./build/entry/file.js && jsmin -o ./dist/asyncStreamProcessor.js ./build/asyncStreamProcessor.js"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^14.7.1"
+    "@types/uuid": "^9.0.0",
+    "discord.js": "^14.7.1",
+    "lodash": "^4.17.21",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/yargs": "^17.0.19",
