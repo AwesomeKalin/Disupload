@@ -11,5 +11,6 @@ const argv = yargs(process.argv.slice(2)).options({
   port: { type: 'number', describe: "The port the HTTP server runs on. Defaults to 8080", default: 8080 }
 }).parseSync();
 
-const bot = new discordBot(argv.token, argv.channelId);
+const bot = new discordBot(argv.channelId, argv.token);
+discordBot.start();
 HTTPServer.start(argv.port);
