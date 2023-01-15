@@ -5,20 +5,20 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "build": "del build /Q && del dist /Q && tsc && pnpm run minify",
+    "minify": "jsmin -o ./dist/discordBot.min.js ./build/discordBot.js && jsmin -o ./dist/disupload.min.js ./build/disupload.js && jsmin -o ./dist/httpServer.min.js ./build/httpServer.js && jsmin -o ./dist/index.min.js ./build/index.js"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "debug": "^4.3.4",
     "discord.js": "^14.7.1"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.7",
     "@types/yargs": "^17.0.19",
     "eslint": "^8.31.0",
+    "jsmin": "^1.0.1",
     "typescript": "^4.9.4",
     "yargs": "^17.6.2"
   }
