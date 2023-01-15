@@ -2,16 +2,16 @@ import { Client, Events, GatewayIntentBits } from 'discord.js';
 
 // The Discord Bot
 export class discordBot {
-    static channelId: string;
-    static token: string;
+    channelId: string;
+    token: string;
 
     constructor(channelId: string, token: string) {
-        discordBot.channelId = channelId;
-        discordBot.token = token;
+        this.channelId = channelId;
+        this.token = token;
     }
 
     // Starts the bot
-    static start() {
+    start() {
         const client = new Client({ intents: [GatewayIntentBits.Guilds] });
         client.login(this.token);
         client.once(Events.ClientReady, c => {

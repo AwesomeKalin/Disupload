@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as HTTPServer from './httpServer.js';
+import {httpServer} from './httpServer.js';
 import {discordBot} from './discordBot.js';
 import yargs from 'yargs/yargs';
 
@@ -12,5 +12,7 @@ const argv = yargs(process.argv.slice(2)).options({
 }).parseSync();
 
 const bot = new discordBot(argv.channelId, argv.token);
-discordBot.start();
-HTTPServer.start(argv.port);
+// Start the bot
+bot.start();
+const server = new httpServer(argv.port, bot);
+server.start();
