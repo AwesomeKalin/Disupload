@@ -23,6 +23,7 @@ export class httpServer {
     }
 
     start() {
+        this.loadStaticFiles();
         this.server = http.createServer(this.requestHandler.bind(this))
         this.server.listen(this.port, () => {
             console.log('HTTP Server listening on ', this.port)
