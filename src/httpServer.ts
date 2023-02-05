@@ -12,7 +12,7 @@ export class httpServer {
     favicon: Buffer;
     styleCSS: string;
     server: http.Server;
-    __dirname;
+    __dirname: string;
 
     constructor(port: number, bot: discordBot) {
         this.port = port;
