@@ -16,8 +16,7 @@ export class httpServer {
     constructor(port: number, bot: discordBot) {
         this.port = port;
         this.bot = bot;
-        const moduleURL = new URL(import.meta.url);
-        this.__dirname = path.dirname(moduleURL.pathname);
+        this.__dirname = path.dirname(new URL(import.meta.url).pathname);
     }
 
     // Start the server
