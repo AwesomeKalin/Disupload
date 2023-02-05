@@ -1,6 +1,7 @@
 import * as http from 'http';
 import { discordBot } from './discordBot.js';
 import fs from 'fs';
+import path from 'path';
 
 // The frontend
 export class httpServer {
@@ -10,16 +11,19 @@ export class httpServer {
     favicon: Buffer;
     styleCSS: string;
     server: http.Server;
+    __dirname;
 
     constructor(port: number, bot: discordBot) {
         this.port = port;
         this.bot = bot;
+        const moduleURL = new URL(import.meta.url);
+        this.__dirname = path.dirname(moduleURL.pathname);
     }
 
     // Start the server
 
     loadStaticFiles() {
-        this.favicon = fs.readFileSync(`${__dirname}/../static/favicon.png`);
+        this.favicon = fs.readFileSync(`${this.__dirname}/../static/favicon.png`);
     }
 
     start() {
