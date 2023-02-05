@@ -25,6 +25,6 @@ export class httpServer {
     }
 
     async requestHandler(req: any, res: any) {
-        console.log(`HTTP Request at ${req.url} with method {req.method}`);
+        console.log(req.method + ': ' + req.url);
     }
 }
