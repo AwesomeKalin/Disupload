@@ -2,6 +2,7 @@ import * as http from 'http';
 import { discordBot } from './discordBot.js';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 // The frontend
 export class httpServer {
@@ -16,14 +17,16 @@ export class httpServer {
     constructor(port: number, bot: discordBot) {
         this.port = port;
         this.bot = bot;
-        this.__dirname = path.dirname(new URL(import.meta.url).pathname);
+        this.__dirname = path.dirname(fileURLToPath(import.meta.url));
     }
 
-    // Start the server
+    // Load the static files
 
     loadStaticFiles() {
         this.favicon = fs.readFileSync(`${this.__dirname}/../static/favicon.png`);
     }
+
+    // Start server
 
     start() {
         this.loadStaticFiles();
@@ -37,10 +40,13 @@ export class httpServer {
         console.log(req.method + ': ' + req.url);
 
         try {
+            // Request Favicon
+
             if(req.url === '/favicon.png') {
                 res.writeHead(200);
                 res.end(this.favicon);
             } else if (req.method === 'OPTIONS') {
+                // Return on Options method
                 res.writeHead(200, {
                     'Access-Control-Allow-Origin': '*',
                     'Access-Control-Allow-Methods': 'GET, HEAD, POST, OPTIONS, DELETE',
