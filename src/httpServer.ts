@@ -18,6 +18,13 @@ export class httpServer {
 
     // Start the server
     start() {
-        
+        this.server = http.createServer(this.requestHandler.bind(this))
+        this.server.listen(this.port, () => {
+            console.log('HTTP Server listening on ', this.port)
+        })
+    }
+
+    async requestHandler(req: any, res: any) {
+        console.log(`HTTP Request at ${req.url} with method {req.method}`);
     }
 }
