@@ -3,7 +3,7 @@
 import { filePart } from "./filePart.js";
 import { v4 as uuidv4 } from 'uuid';
 
-class file {
+export class file {
     name: string;
     parts: [filePart];
     uuid: string;
@@ -31,5 +31,13 @@ class file {
 
     getUUID() {
         return this.uuid;
+    }
+
+    addPart(url: string, partUUID: string) {
+        this.parts.push(new filePart(url, partUUID));
+    }
+
+    rename(name: string) {
+        this.name = name;
     }
 }

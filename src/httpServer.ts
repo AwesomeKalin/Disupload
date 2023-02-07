@@ -13,6 +13,7 @@ export class httpServer {
     styleCSS: string;
     server: http.Server;
     __dirname: string;
+    error404: Buffer;
 
     constructor(port: number, bot: discordBot) {
         this.port = port;
@@ -24,6 +25,7 @@ export class httpServer {
 
     loadStaticFiles() {
         this.favicon = fs.readFileSync(`${this.__dirname}/../static/favicon.png`);
+        this.error404 = fs.readFileSync(`${this.__dirname}/../static/404.html`);
     }
 
     // Start server
@@ -57,7 +59,8 @@ export class httpServer {
                 res.end()
             }
         } catch {
-
+            res.writeHead(404);
+            res.end(this.error404);
         }
     }
 }
