@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { file } from './types/file.js';
 import { filePart } from './types/filePart.js';
 import { AsyncStreamChunker, StreamChunker } from './util/streamChunker.js';
+import * as https from 'https';
 
 // The frontend
 export class httpServer {
@@ -76,19 +77,20 @@ export class httpServer {
                     //  Download File
                     //@ts-expect-error
                     const fileToDownload: file = this.bot.getFileForDownload(req.url);
-                    const partsOfFile: Array<filePart> = fileToDownload.getPartsList();
-                    for (var j = 0; j < partsOfFile.length - 1; j++) {
+                    const partsOfFile: Array<filePart> = fileToDownload.parts;
+                    for (var j = 0; j <= partsOfFile.length - 1; j++) {
                         // Credit to @forscht/ddrive
                         // Typescript-ified and modified to work with my code by AwesomeKalin55
                         await new Promise((resolve, reject) => {
-                            http.get(partsOfFile[j].getUrl(), (res2) => {
-                                res.pipe(new AsyncStreamChunker(async (data) => {
+                            https.get(partsOfFile[j].getUrl(), (res2) => {
+                                res2.pipe(new AsyncStreamChunker(async (data) => {
                                     if (!res.write(data)) await new Promise((r) => res.once('drain', r));
                                 }))
                                 res2.on('error', (err) => reject(err));
                                 res2.on('end', () => resolve(''));
                             });
                         });
+                        // Credit ends here
                     }
                     console.log(`Download of ${req.url} completed`);
                     res.end();

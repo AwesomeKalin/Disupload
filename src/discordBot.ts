@@ -10,6 +10,7 @@ import { deleteFromArray, deleteSpecificObject, removeItem } from './util/delete
 import { addFileToFolder, addFolderToFolder } from './util/addFileToFolder.js';
 import { createFolder } from './util/createFolder.js';
 import { filePart } from './types/filePart.js';
+import { getAllMessages } from './util/getAllMessagesFromChannel.js';
 
 // The Discord Bot
 export class discordBot {
@@ -42,25 +43,19 @@ export class discordBot {
 
             console.log('Loading messages');
 
-            let messagesArray: Array<Message<true>> = [];
-            try {
-                this.channelCache.messages.fetch({ limit: 1 }).then(messages => {
-                    //Iterate through the messages here with the variable "messages".
-                    messages.forEach(message => messagesArray.push(message));
-                });
-            } catch {
-                console.log('No messages, starting affresh');
-                messagesArray = [];
-            }
-
-            messagesArray = messagesArray.reverse();
+            const messagesArray: Array<any> = (await getAllMessages(this.channelCache)).reverse();
 
             console.log('Parsing messages');
             let partsToAssociate: Array<filePart> = [];
 
             for (var i = 0; i < messagesArray.length; i++) {
                 const messageContents: string = messagesArray[i].content;
-                const messageAttachment: string = messagesArray[i].attachments[0].url;
+                let messageAttachment: string;
+                try {
+                    messageAttachment = messagesArray[i].attachments.first().url;
+                } catch {
+
+                }
                 const messageJson: Object = JSON.parse(messageContents);
                 if (messageJson["action"] == "createFolder") {
                     let name: string = messageJson["name"];
@@ -89,12 +84,14 @@ export class discordBot {
                         folders = [name];
                     }
                     let fileToAdd: file = new file(name, uuid);
-                    for (var i = 0; i < partsToAssociate.length - 1; i++) {
-                        if (partsToAssociate[i].fileUUID == uuid) {
-                            fileToAdd.addPart(partsToAssociate[i]);
-                            partsToAssociate = deleteFromArray(partsToAssociate, i);
+                    for (var j = 0; j <= partsToAssociate.length - 1; j++) {
+                        if (partsToAssociate[j].fileUUID == uuid) {
+                            fileToAdd.addPart(partsToAssociate[j]);
+                            partsToAssociate = deleteFromArray(partsToAssociate, j);
                         }
                     }
+
+                    folders = deleteFromArray(folders, folders.length - 1);
                     this.addFileToDir(folders, fileToAdd);
                 }
             }
@@ -115,7 +112,7 @@ export class discordBot {
             const folders: string[] = location.split('/');
             if (checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
         } else {
-            for (var i = 0; i < this.root.files.length - 1; i++) {
+            for (var i = 0; i <= this.root.files.length - 1; i++) {
                 if (this.root.files[i].getName() == location) return true;
             }
         }
@@ -219,7 +216,7 @@ export class discordBot {
         2. Insert file to list
         3. Add back to list
         */
-        if (location[0] == ".") {
+        if (location[0] == "." || location.length == 0) {
             this.root.addFile(file)
             return;
         }
@@ -302,7 +299,7 @@ export class discordBot {
             const folders: string[] = location.split('/');
             return getExistingFile(this.root.getDirectoryList(), 0, folders);
         } else {
-            for (var i = 0; i < this.root.getFileList().length - 1; i++) {
+            for (var i = 0; i <= this.root.getFileList().length - 1; i++) {
                 if (this.root.getFile(i).getName() == location) return this.root.getFile(i);
             }
         }
