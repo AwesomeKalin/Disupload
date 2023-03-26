@@ -6,7 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { createPart } from './util/createPart.js';
 import { TextChannel } from 'discord.js';
 import { AsyncStreamChunker, StreamChunker } from './util/streamChunker.js';
-import { deleteSpecificObject, removeItem } from './util/deleteFromArray.js';
+import { deleteFromArray, deleteSpecificObject, removeItem } from './util/deleteFromArray.js';
 import { addFileToFolder, addFolderToFolder } from './util/addFileToFolder.js';
 import { createFolder } from './util/createFolder.js';
 import { filePart } from './types/filePart.js';
@@ -49,9 +49,9 @@ export class discordBot {
         messagesArray = messagesArray.reverse();
 
         console.log('Parsing messages');
+        let partsToAssociate: Array<filePart> = [];
 
         for (var i = 0; i < messagesArray.length; i++) {
-            let partsToAssociate: Array<filePart> = [];
             const messageContents: string = messagesArray[i].content;
             const messageAttachment: string = messagesArray[i].attachments[0].url;
             const messageJson: Object = JSON.parse(messageContents);
@@ -62,16 +62,33 @@ export class discordBot {
                 if (name.includes('/')) {
                     folders = name.split('/');
                     name = folders[folders.length - 1];
-                    const folder = new directory(name, uuid);
+                    const folder: directory = new directory(name, uuid);
                     this.addFolderToDir(folders, folder);
                 } else {
-                    const folder = new directory(name, uuid);
+                    const folder: directory = new directory(name, uuid);
                     this.addFolderToDir([name], folder);
                 }
             } else if (messageJson["action"] == 'addPart') {
-                const partToAdd = new filePart(messageAttachment, messageJson[""])
+                const partToAdd = new filePart(messageAttachment, messageJson["partUUID"], messageJson["fileUUID"]);
+                partsToAssociate.push(partToAdd);
             } else if (messageJson["action"] == 'uploadFile') {
-
+                let name: string = messageJson["name"]
+                const uuid: string = messageJson["uuid"];
+                let folders: Array<string>;
+                if (name.includes('/')) {
+                    folders = name.split('/');
+                    name = folders[folders.length - 1];
+                } else {
+                    folders = [name];
+                }
+                let fileToAdd: file = new file(name, uuid);
+                for (var i = 0; i < partsToAssociate.length - 1; i++) {
+                    if (partsToAssociate[i].fileUUID == uuid) {
+                        fileToAdd.addPart(partsToAssociate[i]);
+                        partsToAssociate = deleteFromArray(partsToAssociate, i);
+                    }
+                }
+                this.addFileToDir(folders, fileToAdd);
             }
         }
     }
@@ -104,7 +121,7 @@ export class discordBot {
         let folders: Array<string>;
         if (location.includes('/')) {
             folders = location.split('/');
-            name = folders[folders.length];
+            name = folders[folders.length - 1];
         } else {
             name = location;
         }
@@ -146,7 +163,7 @@ export class discordBot {
                         this.addFileToDir(removeItem(folders), upload);
                         message = {
                             action: "uploadFile",
-                            name: name,
+                            name: pushedToUpload,
                             uuid: uuid,
                             parts: partNumber,
                             location: removeItem(folders)
@@ -206,7 +223,7 @@ export class discordBot {
         let folders: Array<string>;
         if (location.includes('/')) {
             folders = location.split('/');
-            name = folders[folders.length];
+            name = folders[folders.length - 1];
         } else {
             name = location;
         }
