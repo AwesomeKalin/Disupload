@@ -3,6 +3,7 @@ import { discordBot } from './discordBot.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { file } from './types/file.js';
 
 // The frontend
 export class httpServer {
@@ -65,6 +66,16 @@ export class httpServer {
                 await this.bot.createFolder(req.url);
                 res.writeHead(303, {Connection: 'close', Location: '/'});
                 res.end();
+            } else if (req.method === 'GET') {
+                // 0 for file, 1 for dir, 2 for non-existant
+                const fileOrFolder: number = this.bot.fileOrFolder(req.url);
+
+                if (fileOrFolder == 0) {
+                    //  Download File
+                    const fileToDownload: file = this.bot.getFileForDownload(req.url);
+                } else if (fileOrFolder == 1) {
+                    // Get list of files and display them
+                }
             }
         } catch {
             res.writeHead(404);

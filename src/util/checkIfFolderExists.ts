@@ -42,3 +42,22 @@ export function checkIfFolderExists(directoriesList: Array<directory>, folderNum
     }
     return false;
 }
+
+export function getExistingFile(directoriesList: Array<directory>, folderNum: number, folders: string[]) {
+    for (var i = 0; i <= directoriesList.length; i++) {
+        if (directoriesList[i].getName() == folders[folderNum]) {
+            if (folderNum + 1 != folders.length) {
+                checkIfFileExists(directoriesList[i].getDirectoryList(), folderNum += 1, folders);
+            } else {
+                // Steps
+                // 1. Get File List
+                // 2. Check all files and check name
+                const fileList: Array<file> = directoriesList[i].getFileList();
+                for (var j = 0; j < fileList.length; j++) {
+                    if(fileList[j].getName() == folders[folderNum+1]) return false;
+                }
+                return fileList[j];
+            }
+        }
+    }
+}

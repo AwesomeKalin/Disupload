@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, Message } from 'discord.js';
 import { directory } from './types/directory.js';
 import { file } from './types/file.js';
-import { checkIfFileExists, checkIfFolderExists } from './util/checkIfFolderExists.js';
+import { checkIfFileExists, checkIfFolderExists, getExistingFile } from './util/checkIfFolderExists.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createPart } from './util/createPart.js';
 import { TextChannel } from 'discord.js';
@@ -91,6 +91,7 @@ export class discordBot {
                 this.addFileToDir(folders, fileToAdd);
             }
         }
+        console.log('Loaded messages');
     }
 
     getFile(location: string) {
@@ -269,5 +270,27 @@ export class discordBot {
         }
         this.root.directories = addFolderToFolder(this.root.getDirectoryList(), 0, location, folder);
         return;
+    }
+
+    fileOrFolder(location: string) {
+        if (this.getFile(location)) {
+            return 0;
+        } else if (this.getFolder(location)) {
+            return 1;
+        }
+        return 2;
+    }
+
+    getFileForDownload(location: string) {
+        location = location.slice(1);
+        if (location.includes('/')) {
+            const folders: string[] = location.split('/');
+            return getExistingFile(this.root.getDirectoryList(), 0, folders);
+        } else {
+            let returnFile: file;
+            for (var i = 0; i < this.root.getFileList().length - 1; i++) {
+                if (this.root.getFile(i).getName() == location) return this.root.getFile(i);
+            }
+        }
     }
 }
