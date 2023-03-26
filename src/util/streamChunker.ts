@@ -43,6 +43,7 @@ export class AsyncStreamChunker extends Transform {
         this.chunkProcessor = chunkProcessor
     }
 
+    //@ts-expect-error
     _transform(chunk: any, callback: (arg0: any) => any) {
         this.chunkProcessor(chunk)
             .then(() => callback(null))

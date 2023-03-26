@@ -287,10 +287,27 @@ export class discordBot {
             const folders: string[] = location.split('/');
             return getExistingFile(this.root.getDirectoryList(), 0, folders);
         } else {
-            let returnFile: file;
             for (var i = 0; i < this.root.getFileList().length - 1; i++) {
                 if (this.root.getFile(i).getName() == location) return this.root.getFile(i);
             }
+        }
+    }
+
+    getFilesFromFolderAsString(location: string) {
+        location = location.slice(1);
+        if (location.includes('/')) {
+
+        } else {
+            const dirList: Array<directory> = this.root.getDirectoryList();
+            const fileList: Array<file> = this.root.getFileList();
+            let stringList: Array<string> = [];
+            for (var i = 0; i < dirList.length - 1; i++) {
+                stringList.push(dirList[i].getName());
+            }
+            for (var i = 0; i < fileList.length - 1; i++) {
+                stringList.push(fileList[i].getName());
+            }
+            return stringList;
         }
     }
 }
