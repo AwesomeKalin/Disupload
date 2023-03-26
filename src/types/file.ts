@@ -33,8 +33,8 @@ export class file {
         return this.uuid;
     }
 
-    addPart(url: string, partUUID: string) {
-        this.parts.push(new filePart(url, partUUID));
+    addPart(part: filePart) {
+        this.parts.push(part);
     }
 
     rename(name: string) {

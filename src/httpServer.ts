@@ -57,6 +57,14 @@ export class httpServer {
                     'Content-Length': 0,
                 })
                 res.end()
+            } else if (req.method === 'UPLOAD') {
+                await this.bot.uploadFile(req.url, req);
+                res.writeHead(303, {Connection: 'close', Location: '/'});
+                res.end();
+            } else if (req.method === 'FOLDER') {
+                await this.bot.createFolder(req.url);
+                res.writeHead(303, {Connection: 'close', Location: '/'});
+                res.end();
             }
         } catch {
             res.writeHead(404);

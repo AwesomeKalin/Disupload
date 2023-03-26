@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 export class filePart {
     url: string;
     partUUID: string;
+    fileUUID: string;
 
-    constructor(url: string, partUUID: string) {
+    constructor(url: string, partUUID: string, fileUUID: string) {
         // Check if the file is new
         if (partUUID === undefined) {
             this.partUUID = uuidv4();
@@ -14,6 +15,7 @@ export class filePart {
             this.partUUID = partUUID;
         }
         this.url = url;
+        this.fileUUID = fileUUID
     }
 
     getUUID() {

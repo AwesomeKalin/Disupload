@@ -7,8 +7,8 @@ import { file } from './file.js';
 export class directory {
     name: string;
     uuid: string;
-    directories: [directory];
-    files: [file];
+    directories: Array<directory>;
+    files: Array<file>;
 
     constructor (name: string, uuid: string) {
         this.name = name;
@@ -43,12 +43,12 @@ export class directory {
         return this.files[id];
     }
 
-    addDirectory(name: string, uuid: string) {
-        this.directories.push(new directory(name, uuid));
+    addDirectory(folder: directory) {
+        this.directories.push(folder);
     }
 
-    addFile(name: string, uuid: string) {
-        this.files.push(new file(name, uuid));
+    addFile(file: file) {
+        this.files.push(file);
     }
     
     deleteDirectory(id: number) {
