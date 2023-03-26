@@ -17,7 +17,7 @@ export class StreamChunker extends Transform {
 
     _transform(chunk, encoding, callback) {
         this.fill += chunk.length
-        this.chunks.push(chunk)
+        this.chunks.push(chunk);
         while (this.fill >= this.chunkSize) {
             this.push(Buffer.concat(this.chunks, this.chunkSize))
             const lastChunk = this.chunks[this.chunks.length - 1]
@@ -46,7 +46,5 @@ export class AsyncStreamChunker extends Transform {
     //@ts-expect-error
     _transform(chunk: any, callback: (arg0: any) => any) {
         this.chunkProcessor(chunk)
-            .then(() => callback(null))
-            .catch((err) => callback(err))
     }
 }

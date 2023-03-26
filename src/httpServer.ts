@@ -44,13 +44,12 @@ export class httpServer {
     async requestHandler(req: any, res: any) {
         console.log(req.method + ': ' + req.url);
 
-        try {
+        //try {
             // Request Favicon
-
-            if (req.url === '/favicon.png') {
+            if (req.url == '/favicon.png') {
                 res.writeHead(200);
                 res.end(this.favicon);
-            } else if (req.method === 'OPTIONS') {
+            } else if (req.method == 'OPTIONS') {
                 // Return on Options method
                 res.writeHead(200, {
                     'Access-Control-Allow-Origin': '*',
@@ -60,15 +59,15 @@ export class httpServer {
                     'Content-Length': 0,
                 })
                 res.end()
-            } else if (req.method === 'UPLOAD') {
+            } else if (req.method == 'POST') {
                 await this.bot.uploadFile(req.url, req);
-                res.writeHead(303, { Connection: 'close', Location: '/' });
+                res.writeHead(303, { Connection: 'close', Location: '/',});
                 res.end();
-            } else if (req.method === 'FOLDER') {
+            } else if (req.method == 'PUT') {
                 await this.bot.createFolder(req.url);
-                res.writeHead(303, { Connection: 'close', Location: '/' });
+                res.writeHead(303, { Connection: 'close', Location: '/',});
                 res.end();
-            } else if (req.method === 'GET') {
+            } else if (req.method == 'GET') {
                 // 0 for file, 1 for dir, 2 for non-existant
                 const fileOrFolder: number = this.bot.fileOrFolder(req.url);
 
@@ -101,13 +100,13 @@ export class httpServer {
                     res.end(webpage);
                 } else {
                     res.writeHead(404);
-                    res.end('Error 404. Page or file not found');
+                    res.end(this.error404);
                 }
             }
-        } catch {
-            res.writeHead(404);
-            res.end(this.error404);
-        }
+        //} catch {
+            //res.writeHead(404);
+            //res.end(this.error404);
+        //}
     }
 
     renderWebPage(filesInFolder: Array<string>, currentURL: string) {

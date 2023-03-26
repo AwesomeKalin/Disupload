@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 export class file {
     name: string;
-    parts: [filePart];
+    parts: Array<filePart>;
     uuid: string;
 
     constructor (name: string, uuid: string) {
@@ -15,6 +15,7 @@ export class file {
             this.uuid = uuid;
         }
         this.name = name;
+        this.parts = [];
     }
 
     getName() {

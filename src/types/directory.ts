@@ -17,6 +17,8 @@ export class directory {
         } else {
             this.uuid = uuid;
         }
+        this.directories = [];
+        this.files = [];
     }
 
     getName() {

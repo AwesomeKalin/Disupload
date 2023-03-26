@@ -24,6 +24,8 @@ export class discordBot {
     constructor(channelId: string, token: string) {
         this.channelId = channelId;
         this.token = token;
+        this.uploadLock = [];
+        this.root = new directory('.', uuidv4());
     }
 
     // Starts the bot
@@ -35,63 +37,69 @@ export class discordBot {
             console.log(`Bot logged in as ${c.user.tag}`);
         });
 
-        this.channelCache = this.client.channels.cache.get(this.channelId) as TextChannel;
+        this.client.on('ready', async () => {
+            this.channelCache = this.client.channels.cache.get(this.channelId) as TextChannel || await this.client.channels.fetch(this.channelId) as TextChannel;
 
-        console.log('Loading messages');
+            console.log('Loading messages');
 
-        let messagesArray: Array<Message<true>> = [];
-
-        this.channelCache.messages.fetch({ limit: 1 }).then(messages => {
-            //Iterate through the messages here with the variable "messages".
-            messages.forEach(message => messagesArray.push(message));
-        });
-
-        messagesArray = messagesArray.reverse();
-
-        console.log('Parsing messages');
-        let partsToAssociate: Array<filePart> = [];
-
-        for (var i = 0; i < messagesArray.length; i++) {
-            const messageContents: string = messagesArray[i].content;
-            const messageAttachment: string = messagesArray[i].attachments[0].url;
-            const messageJson: Object = JSON.parse(messageContents);
-            if (messageJson["action"] == "createFolder") {
-                let name: string = messageJson["name"];
-                const uuid: string = messageJson["folderUUID"];
-                let folders: Array<string>;
-                if (name.includes('/')) {
-                    folders = name.split('/');
-                    name = folders[folders.length - 1];
-                    const folder: directory = new directory(name, uuid);
-                    this.addFolderToDir(folders, folder);
-                } else {
-                    const folder: directory = new directory(name, uuid);
-                    this.addFolderToDir([name], folder);
-                }
-            } else if (messageJson["action"] == 'addPart') {
-                const partToAdd = new filePart(messageAttachment, messageJson["partUUID"], messageJson["fileUUID"]);
-                partsToAssociate.push(partToAdd);
-            } else if (messageJson["action"] == 'uploadFile') {
-                let name: string = messageJson["name"]
-                const uuid: string = messageJson["uuid"];
-                let folders: Array<string>;
-                if (name.includes('/')) {
-                    folders = name.split('/');
-                    name = folders[folders.length - 1];
-                } else {
-                    folders = [name];
-                }
-                let fileToAdd: file = new file(name, uuid);
-                for (var i = 0; i < partsToAssociate.length - 1; i++) {
-                    if (partsToAssociate[i].fileUUID == uuid) {
-                        fileToAdd.addPart(partsToAssociate[i]);
-                        partsToAssociate = deleteFromArray(partsToAssociate, i);
-                    }
-                }
-                this.addFileToDir(folders, fileToAdd);
+            let messagesArray: Array<Message<true>> = [];
+            try {
+                this.channelCache.messages.fetch({ limit: 1 }).then(messages => {
+                    //Iterate through the messages here with the variable "messages".
+                    messages.forEach(message => messagesArray.push(message));
+                });
+            } catch {
+                console.log('No messages, starting affresh');
+                messagesArray = [];
             }
-        }
-        console.log('Loaded messages');
+
+            messagesArray = messagesArray.reverse();
+
+            console.log('Parsing messages');
+            let partsToAssociate: Array<filePart> = [];
+
+            for (var i = 0; i < messagesArray.length; i++) {
+                const messageContents: string = messagesArray[i].content;
+                const messageAttachment: string = messagesArray[i].attachments[0].url;
+                const messageJson: Object = JSON.parse(messageContents);
+                if (messageJson["action"] == "createFolder") {
+                    let name: string = messageJson["name"];
+                    const uuid: string = messageJson["folderUUID"];
+                    let folders: Array<string>;
+                    if (name.includes('/')) {
+                        folders = name.split('/');
+                        name = folders[folders.length - 1];
+                        const folder: directory = new directory(name, uuid);
+                        this.addFolderToDir(folders, folder);
+                    } else {
+                        const folder: directory = new directory(name, uuid);
+                        this.addFolderToDir([name], folder);
+                    }
+                } else if (messageJson["action"] == 'addPart') {
+                    const partToAdd = new filePart(messageAttachment, messageJson["partUUID"], messageJson["fileUUID"]);
+                    partsToAssociate.push(partToAdd);
+                } else if (messageJson["action"] == 'uploadFile') {
+                    let name: string = messageJson["name"]
+                    const uuid: string = messageJson["uuid"];
+                    let folders: Array<string>;
+                    if (name.includes('/')) {
+                        folders = name.split('/');
+                        name = folders[folders.length - 1];
+                    } else {
+                        folders = [name];
+                    }
+                    let fileToAdd: file = new file(name, uuid);
+                    for (var i = 0; i < partsToAssociate.length - 1; i++) {
+                        if (partsToAssociate[i].fileUUID == uuid) {
+                            fileToAdd.addPart(partsToAssociate[i]);
+                            partsToAssociate = deleteFromArray(partsToAssociate, i);
+                        }
+                    }
+                    this.addFileToDir(folders, fileToAdd);
+                }
+            }
+            console.log('Loaded messages');
+        });
     }
 
     getFile(location: string) {
@@ -102,10 +110,16 @@ export class discordBot {
         // 4. If they do, check if the file exists
         // 5. Upload if it doesn't
         location = location.slice(1);
+        if (this.root.files.length == 0) return true;
         if (location.includes('/')) {
             const folders: string[] = location.split('/');
             if (checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
+        } else {
+            for (var i = 0; i < this.root.files.length - 1; i++) {
+                if (this.root.files[i].getName() == location) return true;
+            }
         }
+        return false;
     }
 
     async uploadFile(location: string, stream: { pipe: (arg0: StreamChunker) => { (): any; new(): any; pipe: { (arg0: AsyncStreamChunker): { (): any; new(): any; on: { (arg0: string, arg1: () => void): { (): any; new(): any; on: { (arg0: string, arg1: (err: any) => Promise<void>): void; new(): any; }; }; new(): any; }; }; new(): any; }; }; }) {
