@@ -122,7 +122,7 @@ export class discordBot {
         return false;
     }
 
-    async uploadFile(location: string, stream: { pipe: (arg0: StreamChunker) => { (): any; new(): any; pipe: { (arg0: AsyncStreamChunker): { (): any; new(): any; on: { (arg0: string, arg1: () => void): { (): any; new(): any; on: { (arg0: string, arg1: (err: any) => Promise<void>): void; new(): any; }; }; new(): any; }; }; new(): any; }; }; }) {
+    async uploadFile(location: string, stream: any) {
         // Check if file is already being uploaded
         if (this.uploadLock.includes(location)) return false;
         // Check if file exists
@@ -164,6 +164,7 @@ export class discordBot {
         // Consume Stream
         return new Promise((resolve, reject) => {
             stream
+                .on('aborted', () => handleAbort(reject, console.log('File Upload Aborted')))
                 .pipe(new StreamChunker())
                 .pipe(new AsyncStreamChunker(chunkUploader))
                 .on('finish', () => {
