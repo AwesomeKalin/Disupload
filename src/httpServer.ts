@@ -69,14 +69,18 @@ export class httpServer {
                 res.writeHead(303, { Connection: 'close', Location: '/',});
                 res.end();
             } else if (req.method == 'GET') {
+                let url: string;
+                if (req.url.charAt(req.url.length-1) == '/') {
+                    url = req.url.slice(0, -1);
+                } else url = req.url;
                 // 0 for file, 1 for dir, 2 for non-existant
-                const fileOrFolder: number = this.bot.fileOrFolder(req.url);
+                const fileOrFolder: number = this.bot.fileOrFolder(url);
 
                 if (fileOrFolder == 0) {
                     console.log(`Downloading ${req.url}`);
                     //  Download File
                     //@ts-expect-error
-                    const fileToDownload: file = this.bot.getFileForDownload(req.url);
+                    const fileToDownload: file = this.bot.getFileForDownload(url);
                     const partsOfFile: Array<filePart> = fileToDownload.parts;
                     for (var j = 0; j <= partsOfFile.length - 1; j++) {
                         // Credit to @forscht/ddrive
@@ -96,8 +100,8 @@ export class httpServer {
                     res.end();
                 } else if (fileOrFolder == 1) {
                     // Get list of files and display them
-                    const filesInFolder: Array<string> = this.bot.getFilesFromFolderAsString(req.url);
-                    const webpage: string = this.renderWebPage(filesInFolder, req.url);
+                    const filesInFolder: Array<string> = this.bot.getFilesFromFolderAsString(url);
+                    const webpage: string = this.renderWebPage(filesInFolder, url);
                     res.writeHead(200, { 'Content-Type': 'text/html' });
                     res.end(webpage);
                 } else {

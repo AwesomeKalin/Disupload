@@ -64,12 +64,9 @@ export class discordBot {
                     if (name.includes('/')) {
                         folders = name.split('/');
                         name = folders[folders.length - 1];
-                        const folder: directory = new directory(name, uuid);
-                        this.addFolderToDir(folders, folder);
-                    } else {
-                        const folder: directory = new directory(name, uuid);
-                        this.addFolderToDir([name], folder);
-                    }
+                    } else folders = ['.'];
+                    const folder: directory = new directory(name, uuid);
+                    this.addFolderToDir(folders, folder);
                 } else if (messageJson["action"] == 'addPart') {
                     const partToAdd = new filePart(messageAttachment, messageJson["partUUID"], messageJson["fileUUID"]);
                     partsToAssociate.push(partToAdd);
@@ -107,14 +104,13 @@ export class discordBot {
         // 4. If they do, check if the file exists
         // 5. Upload if it doesn't
         location = location.slice(1);
-        if (this.root.files.length == 0) return true;
         if (location.includes('/')) {
             const folders: string[] = location.split('/');
-            if (checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
-        } else {
-            for (var i = 0; i <= this.root.files.length - 1; i++) {
-                if (this.root.files[i].getName() == location) return true;
-            }
+            if (!checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
+        }
+        if (this.root.files.length == 0) return true;
+        for (var i = 0; i <= this.root.files.length - 1; i++) {
+            if (this.root.files[i].getName() == location) return true;
         }
         return false;
     }
@@ -123,7 +119,7 @@ export class discordBot {
         // Check if file is already being uploaded
         if (this.uploadLock.includes(location)) return false;
         // Check if file exists
-        if (!this.getFile(location)) return false;
+        if (this.getFile(location)) return false;
         this.uploadLock.push(location);
         const pushedToUpload: string = location;
         console.log(`Uploading to ${location}`);
@@ -204,8 +200,8 @@ export class discordBot {
         this.channelCache.send(contents);
     }
 
-    async sendMessageWithAttachment(message: string, file: Buffer) {
-        const messageSent = this.channelCache.send({ content: message, files: [file] });
+    async sendMessageWithAttachment(message: string, file: Buffer, fileName: string) {
+        const messageSent = this.channelCache.send({ content: message, files: [{attachment: file, name: fileName}] });
         return (await messageSent).attachments.first().url;
     }
 
@@ -229,7 +225,7 @@ export class discordBot {
         if (!this.getFolder(location)) return false;
         this.uploadLock.push(location);
         const pushedToUpload: string = location;
-        console.log(`Uploading to ${location}`);
+        console.log(`Creating folder at ${location}`);
         // Extract name from location
         location = location.slice(1);
         let name: string;
@@ -262,11 +258,16 @@ export class discordBot {
         // 3. Check if those directories exist
         // 4. If they do, check if the file exists
         // 5. Upload if it doesn't
+        console.log(location);
         location = location.slice(1);
         if (location.includes('/')) {
             const folders: string[] = location.split('/');
             if (checkIfFolderExists(this.root.getDirectoryList(), 0, folders)) return true;
         }
+        for (var i = 0; i <= this.root.directories.length - 1; i++) {
+            if (this.root.directories[i].getName() == location) return true;
+        }
+        return false;
     }
 
     addFolderToDir(location: Array<string>, folder: directory) {
@@ -276,7 +277,7 @@ export class discordBot {
         2. Insert file to list
         3. Add back to list
         */
-        if (location[0] == ".") {
+        if (location[0] == "." || location.length == 0) {
             this.root.addDirectory(folder);
             return;
         }

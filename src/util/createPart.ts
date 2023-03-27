@@ -10,7 +10,7 @@ export async function createPart(partNumber: number, chunkBuffer: Buffer, fileUU
         part: number;
         partUUID: string;
     } = {action: "addPart", fileUUID: fileUUID, part: partNumber, partUUID: uuid};
-    const message = await discordBot.sendMessageWithAttachment(JSON.stringify(messageContent), chunkBuffer)
+    const message = await discordBot.sendMessageWithAttachment(JSON.stringify(messageContent), chunkBuffer, uuid);
     const chunk: filePart = new filePart(message, uuid, fileUUID);
     return chunk;
 }
