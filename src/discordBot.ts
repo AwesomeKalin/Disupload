@@ -71,20 +71,25 @@ export class discordBot {
                     const partToAdd = new filePart(messageAttachment, messageJson["partUUID"], messageJson["fileUUID"]);
                     partsToAssociate.push(partToAdd);
                 } else if (messageJson["action"] == 'uploadFile') {
-                    let name: string = messageJson["name"]
+                    let name: string = messageJson["name"];
                     const uuid: string = messageJson["uuid"];
                     let folders: Array<string>;
                     if (name.includes('/')) {
+                        name = name.slice(1);
                         folders = name.split('/');
                         name = folders[folders.length - 1];
                     } else {
                         folders = [name];
                     }
                     let fileToAdd: file = new file(name, uuid);
-                    for (var j = 0; j <= partsToAssociate.length - 1; j++) {
+                    var j = 0;
+                    while (j < partsToAssociate.length) {
                         if (partsToAssociate[j].fileUUID == uuid) {
                             fileToAdd.addPart(partsToAssociate[j]);
-                            partsToAssociate = deleteFromArray(partsToAssociate, j);
+                            partsToAssociate.splice(j, 1);
+                        }
+                        else {
+                            j++;
                         }
                     }
 
@@ -106,6 +111,8 @@ export class discordBot {
         location = location.slice(1);
         if (location.includes('/')) {
             const folders: string[] = location.split('/');
+            console.log(folders);
+            console.log(checkIfFileExists(this.root.getDirectoryList(), 0, folders))
             if (!checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
         }
         if (this.root.files.length == 0) return true;
@@ -201,7 +208,7 @@ export class discordBot {
     }
 
     async sendMessageWithAttachment(message: string, file: Buffer, fileName: string) {
-        const messageSent = this.channelCache.send({ content: message, files: [{attachment: file, name: fileName}] });
+        const messageSent = this.channelCache.send({ content: message, files: [{ attachment: file, name: fileName }] });
         return (await messageSent).attachments.first().url;
     }
 
@@ -258,7 +265,6 @@ export class discordBot {
         // 3. Check if those directories exist
         // 4. If they do, check if the file exists
         // 5. Upload if it doesn't
-        console.log(location);
         location = location.slice(1);
         if (location.includes('/')) {
             const folders: string[] = location.split('/');
