@@ -92,11 +92,15 @@ export class discordBot {
                             j++;
                         }
                     }
-
-                    folders = deleteFromArray(folders, folders.length - 1);
-                    this.addFileToDir(folders, fileToAdd);
+                    if (name == folders[0]) {
+                        folders = deleteFromArray(folders, folders.length - 1);
+                        this.addFileToDir(folders, fileToAdd);
+                    } else {
+                        this.addFileToDir(folders, fileToAdd)
+                    }
                 }
             }
+            
             console.log('Loaded messages');
         });
     }
@@ -110,14 +114,14 @@ export class discordBot {
         // 5. Upload if it doesn't
         location = location.slice(1);
         if (location.includes('/')) {
+            if (this.root.directories.length == 0) return false;
             const folders: string[] = location.split('/');
-            console.log(folders);
-            console.log(checkIfFileExists(this.root.getDirectoryList(), 0, folders))
-            if (!checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
-        }
-        if (this.root.files.length == 0) return true;
-        for (var i = 0; i <= this.root.files.length - 1; i++) {
-            if (this.root.files[i].getName() == location) return true;
+            if (checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
+        } else {
+            if (this.root.files.length == 0) return true;
+            for (var i = 0; i <= this.root.files.length - 1; i++) {
+                if (this.root.files[i].getName() == location) return true;
+            }
         }
         return false;
     }

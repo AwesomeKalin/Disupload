@@ -81,6 +81,7 @@ export class httpServer {
                     //  Download File
                     //@ts-expect-error
                     const fileToDownload: file = this.bot.getFileForDownload(url);
+                    console.log(fileToDownload);
                     const partsOfFile: Array<filePart> = fileToDownload.parts;
                     for (var j = 0; j <= partsOfFile.length - 1; j++) {
                         // Credit to @forscht/ddrive

@@ -48,9 +48,9 @@ export function checkIfFolderExists(directoriesList: Array<directory>, folderNum
 }
 
 export function getExistingFile(directoriesList: Array<directory>, folderNum: number, folders: string[]) {
-    for (var i = 0; i <= directoriesList.length; i++) {
+    for (var i = 0; i <= directoriesList.length - 1; i++) {
         if (directoriesList[i].getName() == folders[folderNum]) {
-            if (folderNum + 1 != folders.length) {
+            if (folderNum + 1 != folders.length - 1) {
                 checkIfFileExists(directoriesList[i].getDirectoryList(), folderNum += 1, folders);
             } else {
                 // Steps
@@ -58,9 +58,9 @@ export function getExistingFile(directoriesList: Array<directory>, folderNum: nu
                 // 2. Check all files and check name
                 const fileList: Array<file> = directoriesList[i].getFileList();
                 for (var j = 0; j < fileList.length; j++) {
-                    if (fileList[j].getName() == folders[folderNum + 1]) return false;
+                    if (fileList[j].getName() == folders[folderNum + 1]) return fileList[j];
                 }
-                return fileList[j];
+                return false;
             }
         }
     }
