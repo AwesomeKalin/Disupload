@@ -100,7 +100,7 @@ export class discordBot {
                     }
                 }
             }
-            
+
             console.log('Loaded messages');
         });
     }
@@ -317,17 +317,33 @@ export class discordBot {
     }
 
     getFilesFromFolderAsString(location: string) {
+        if (location == '.') {
+            let stringList: Array<string> = [];
+            for (var i = 0; i <= this.root.directories.length - 1; i++) {
+                stringList.push(this.root.directories[i].getName());
+            }
+            for (var i = 0; i <= this.root.files.length - 1; i++) {
+                stringList.push(this.root.files[i].getName());
+            }
+            return stringList;
+        }
         location = location.slice(1);
         if (location.includes('/')) {
 
         } else {
-            const dirList: Array<directory> = this.root.getDirectoryList();
-            const fileList: Array<file> = this.root.getFileList();
-            let stringList: Array<string> = [];
-            for (var i = 0; i < dirList.length - 1; i++) {
-                stringList.push(dirList[i].getName());
+            let dirList: directory;
+            for (var j = 0; j <= this.root.getDirectoryList().length - 1; j++) {
+                if (this.root.getDirectory(j).getName() == location) {
+                    dirList = this.root.getDirectory(j);
+                }
             }
-            for (var i = 0; i < fileList.length - 1; i++) {
+            const dirListToShow: Array<directory> = dirList.getDirectoryList();
+            const fileList: Array<file> = dirList.getFileList();
+            let stringList: Array<string> = [];
+            for (var i = 0; i <= dirListToShow.length - 1; i++) {
+                stringList.push(dirListToShow[i].getName());
+            }
+            for (var i = 0; i <= fileList.length - 1; i++) {
                 stringList.push(fileList[i].getName());
             }
             return stringList;

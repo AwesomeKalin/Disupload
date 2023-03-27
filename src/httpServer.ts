@@ -45,7 +45,7 @@ export class httpServer {
     async requestHandler(req: any, res: any) {
         console.log(req.method + ': ' + req.url);
 
-        //try {
+        try {
             // Request Favicon
             if (req.url == '/favicon.png') {
                 res.writeHead(200);
@@ -62,15 +62,20 @@ export class httpServer {
                 res.end()
             } else if (req.method == 'POST') {
                 await this.bot.uploadFile(req.url, req);
-                res.writeHead(303, { Connection: 'close', Location: '/',});
+                res.writeHead(303, { Connection: 'close', Location: '/', });
                 res.end();
             } else if (req.method == 'PUT') {
                 await this.bot.createFolder(req.url);
-                res.writeHead(303, { Connection: 'close', Location: '/',});
+                res.writeHead(303, { Connection: 'close', Location: '/', });
                 res.end();
+            } else if (req.method == 'GET' && req.url == '/') {
+                const filesInFolder: Array<string> = this.bot.getFilesFromFolderAsString('.');
+                const webpage: string = this.renderWebPage(filesInFolder, '');
+                res.writeHead(200, { 'Content-Type': 'text/html' });
+                res.end(webpage);
             } else if (req.method == 'GET') {
                 let url: string;
-                if (req.url.charAt(req.url.length-1) == '/') {
+                if (req.url.charAt(req.url.length - 1) == '/') {
                     url = req.url.slice(0, -1);
                 } else url = req.url;
                 // 0 for file, 1 for dir, 2 for non-existant
@@ -81,7 +86,6 @@ export class httpServer {
                     //  Download File
                     //@ts-expect-error
                     const fileToDownload: file = this.bot.getFileForDownload(url);
-                    console.log(fileToDownload);
                     const partsOfFile: Array<filePart> = fileToDownload.parts;
                     for (var j = 0; j <= partsOfFile.length - 1; j++) {
                         // Credit to @forscht/ddrive
@@ -110,16 +114,16 @@ export class httpServer {
                     res.end(this.error404);
                 }
             }
-        //} catch {
-            //res.writeHead(404);
-            //res.end(this.error404);
-        //}
+        } catch {
+            res.writeHead(404);
+            res.end(this.error404);
+        }
     }
 
     renderWebPage(filesInFolder: Array<string>, currentURL: string) {
         let webpage: string = '<!DOCTYPE html>\n<html>\n<head>\n<title>Disupload</title>\n</head>\n<body>\n';
-        for (var i = 0; i < filesInFolder.length - 1; i++) {
-            webpage += `<a href="${currentURL}/${filesInFolder[i]}">${filesInFolder[i]}</a>\n`
+        for (var i = 0; i <= filesInFolder.length - 1; i++) {
+            webpage += `<a href="${currentURL}/${filesInFolder[i]}">${filesInFolder[i]}</a><br />\n`
         }
         webpage += '</body>\n</html>';
         return webpage;
