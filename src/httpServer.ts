@@ -18,11 +18,15 @@ export class httpServer {
     server: http.Server;
     __dirname: string;
     error404: Buffer;
+    username: string;
+    password: string;
 
-    constructor(port: number, bot: discordBot) {
+    constructor(port: number, bot: discordBot, username?: string, password?: string) {
         this.port = port;
         this.bot = bot;
         this.__dirname = path.dirname(fileURLToPath(import.meta.url));
+        this.username = username;
+        this.password = password
     }
 
     // Load the static files
@@ -45,9 +49,13 @@ export class httpServer {
     async requestHandler(req: any, res: any) {
         console.log(req.method + ': ' + req.url);
 
+        if (this.username != undefined && this.password != undefined) {
+            this.handleAuth(req, res);
+        }
+
         try {
             // Request Favicon
-            if (req.url == '/favicon.png') {
+            if (req.url == '/favicon.png' || req.url == '/favicon.ico') {
                 res.writeHead(200);
                 res.end(this.favicon);
             } else if (req.method == 'OPTIONS') {
@@ -84,7 +92,6 @@ export class httpServer {
                 if (fileOrFolder == 0) {
                     console.log(`Downloading ${req.url}`);
                     //  Download File
-                    //@ts-expect-error
                     const fileToDownload: file = this.bot.getFileForDownload(url);
                     const partsOfFile: Array<filePart> = fileToDownload.parts;
                     for (var j = 0; j <= partsOfFile.length - 1; j++) {
@@ -127,5 +134,24 @@ export class httpServer {
         }
         webpage += '</body>\n</html>';
         return webpage;
+    }
+
+    handleAuth(req, res) {
+        // By ChatGPT, modified to work with project
+        const authHeader = req.headers.authorization;
+        if (authHeader) {
+            const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+            const reqUsername = auth[0];
+            const reqPassword = auth[1];
+            if (reqUsername === this.username && reqPassword === this.password) { } else {
+                res.statusCode = 401;
+                res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+                res.end('Invalid username or password');
+            }
+        } else {
+            res.statusCode = 401;
+            res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+            res.end('Authentication required');
+        }
     }
 }

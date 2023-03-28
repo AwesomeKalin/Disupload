@@ -1,7 +1,7 @@
 import { Client, Events, GatewayIntentBits, Message } from 'discord.js';
 import { directory } from './types/directory.js';
 import { file } from './types/file.js';
-import { checkIfFileExists, checkIfFolderExists, getExistingFile } from './util/checkIfFolderExists.js';
+import { checkIfFileExists, checkIfFolderExists, getExistingFile, getExistingFolder } from './util/checkIfFolderExists.js';
 import { v4 as uuidv4 } from 'uuid';
 import { createPart } from './util/createPart.js';
 import { TextChannel } from 'discord.js';
@@ -63,6 +63,7 @@ export class discordBot {
                     let folders: Array<string>;
                     if (name.includes('/')) {
                         folders = name.split('/');
+                        folders = folders.splice(1, folders.length - 1);
                         name = folders[folders.length - 1];
                     } else folders = ['.'];
                     const folder: directory = new directory(name, uuid);
@@ -100,7 +101,6 @@ export class discordBot {
                     }
                 }
             }
-
             console.log('Loaded messages');
         });
     }
@@ -116,7 +116,7 @@ export class discordBot {
         if (location.includes('/')) {
             if (this.root.directories.length == 0) return false;
             const folders: string[] = location.split('/');
-            if (checkIfFileExists(this.root.getDirectoryList(), 0, folders)) return true;
+            return checkIfFileExists(this.root.getDirectoryList(), 0, folders)
         } else {
             if (this.root.files.length == 0) return true;
             for (var i = 0; i <= this.root.files.length - 1; i++) {
@@ -233,7 +233,7 @@ export class discordBot {
 
     async createFolder(location: string) {
         if (this.uploadLock.includes(location)) return false;
-        if (!this.getFolder(location)) return false;
+        if (this.getFolder(location)) return false;
         this.uploadLock.push(location);
         const pushedToUpload: string = location;
         console.log(`Creating folder at ${location}`);
@@ -252,7 +252,7 @@ export class discordBot {
         // Create directory
         const directoryToAdd: directory = new directory(name, uuid);
         if (name != location) {
-            this.addFolderToDir(removeItem(folders), directoryToAdd);
+            this.addFolderToDir(folders, directoryToAdd);
             await createFolder(uuid, this, pushedToUpload);
         } else {
             this.addFolderToDir(["."], directoryToAdd);
@@ -329,7 +329,18 @@ export class discordBot {
         }
         location = location.slice(1);
         if (location.includes('/')) {
-
+            const folders: string[] = location.split('/');
+            const folderList: directory = getExistingFolder(this.root.getDirectoryList(), 0, folders);
+            const dirListToShow: Array<directory> = folderList.getDirectoryList();
+            const fileList: Array<file> = folderList.getFileList();
+            let stringList: Array<string> = [];
+            for (var i = 0; i <= dirListToShow.length - 1; i++) {
+                stringList.push(dirListToShow[i].getName());
+            }
+            for (var i = 0; i <= fileList.length - 1; i++) {
+                stringList.push(fileList[i].getName());
+            }
+            return stringList;
         } else {
             let dirList: directory;
             for (var j = 0; j <= this.root.getDirectoryList().length - 1; j++) {
