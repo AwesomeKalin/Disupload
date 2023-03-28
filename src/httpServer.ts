@@ -97,7 +97,9 @@ export class httpServer {
                         await new Promise((resolve, reject) => {
                             https.get(partsOfFile[j].getUrl(), (res2) => {
                                 res2.pipe(new AsyncStreamChunker(async (data) => {
-                                    data = decryptBuffer(data, this.password);
+                                    if (this.password != undefined) {
+                                        data = decryptBuffer(data, this.password);
+                                    }
                                     if (!res.write(data)) await new Promise((r) => res.once('drain', r));
                                 }))
                                 res2.on('error', (err) => reject(err));
@@ -137,26 +139,27 @@ export class httpServer {
     handleAuth(req: { headers: { authorization: any; }; }, res: { statusCode: number; setHeader: (arg0: string, arg1: string) => void; end: (arg0: string) => void; }) {
         if (this.username == undefined && this.password == undefined) {
             this.requestHandler(req, res)
-        }
-        // By ChatGPT, modified to work with project
-        const authHeader = req.headers.authorization;
-        if (authHeader) {
-            const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
-            const reqUsername = auth[0];
-            const reqPassword = auth[1];
-            if (reqUsername === this.username && reqPassword === this.password) { 
-                this.requestHandler(req, res)
+        } else {
+            // By ChatGPT, modified to work with project
+            const authHeader = req.headers.authorization;
+            if (authHeader) {
+                const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
+                const reqUsername = auth[0];
+                const reqPassword = auth[1];
+                if (reqUsername === this.username && reqPassword === this.password) {
+                    this.requestHandler(req, res)
+                } else {
+                    res.statusCode = 401;
+                    res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
+                    res.end('Invalid username or password');
+                }
             } else {
                 res.statusCode = 401;
                 res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
-                res.end('Invalid username or password');
+                res.end('Authentication required');
             }
-        } else {
-            res.statusCode = 401;
-            res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
-            res.end('Authentication required');
-        }
 
-        return false;
+            return false;
+        }
     }
 }

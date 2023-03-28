@@ -120,7 +120,7 @@ export class discordBot {
             const folders: string[] = location.split('/');
             return checkIfFileExists(this.root.getDirectoryList(), 0, folders)
         } else {
-            if (this.root.files.length == 0) return true;
+            if (this.root.files.length == 0) return false;
             for (var i = 0; i <= this.root.files.length - 1; i++) {
                 if (this.root.files[i].getName() == location) return true;
             }
