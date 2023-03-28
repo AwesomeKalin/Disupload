@@ -7,6 +7,7 @@ import { file } from './types/file.js';
 import { filePart } from './types/filePart.js';
 import { AsyncStreamChunker, StreamChunker } from './util/streamChunker.js';
 import * as https from 'https';
+import { decryptBuffer } from './util/encryption.js';
 
 // The frontend
 export class httpServer {
@@ -40,7 +41,7 @@ export class httpServer {
 
     start() {
         this.loadStaticFiles();
-        this.server = http.createServer(this.requestHandler.bind(this))
+        this.server = http.createServer(this.handleAuth.bind(this))
         this.server.listen(this.port, () => {
             console.log('HTTP Server listening on ', this.port)
         })
@@ -48,10 +49,6 @@ export class httpServer {
 
     async requestHandler(req: any, res: any) {
         console.log(req.method + ': ' + req.url);
-
-        if (this.username != undefined && this.password != undefined) {
-            this.handleAuth(req, res);
-        }
 
         try {
             // Request Favicon
@@ -100,6 +97,7 @@ export class httpServer {
                         await new Promise((resolve, reject) => {
                             https.get(partsOfFile[j].getUrl(), (res2) => {
                                 res2.pipe(new AsyncStreamChunker(async (data) => {
+                                    data = decryptBuffer(data, this.password);
                                     if (!res.write(data)) await new Promise((r) => res.once('drain', r));
                                 }))
                                 res2.on('error', (err) => reject(err));
@@ -136,14 +134,19 @@ export class httpServer {
         return webpage;
     }
 
-    handleAuth(req, res) {
+    handleAuth(req: { headers: { authorization: any; }; }, res: { statusCode: number; setHeader: (arg0: string, arg1: string) => void; end: (arg0: string) => void; }) {
+        if (this.username == undefined && this.password == undefined) {
+            this.requestHandler(req, res)
+        }
         // By ChatGPT, modified to work with project
         const authHeader = req.headers.authorization;
         if (authHeader) {
             const auth = Buffer.from(authHeader.split(' ')[1], 'base64').toString().split(':');
             const reqUsername = auth[0];
             const reqPassword = auth[1];
-            if (reqUsername === this.username && reqPassword === this.password) { } else {
+            if (reqUsername === this.username && reqPassword === this.password) { 
+                this.requestHandler(req, res)
+            } else {
                 res.statusCode = 401;
                 res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
                 res.end('Invalid username or password');
@@ -153,5 +156,7 @@ export class httpServer {
             res.setHeader('WWW-Authenticate', 'Basic realm="Secure Area"');
             res.end('Authentication required');
         }
+
+        return false;
     }
 }

@@ -21,12 +21,14 @@ export class discordBot {
     uploadLock: Array<string>;
     channelCache: TextChannel;
     root: directory;
+    encryptionKey: string;
 
-    constructor(channelId: string, token: string) {
+    constructor(channelId: string, token: string, encryptionKey?: string) {
         this.channelId = channelId;
         this.token = token;
         this.uploadLock = [];
         this.root = new directory('.', uuidv4());
+        this.encryptionKey = encryptionKey;
     }
 
     // Starts the bot
@@ -153,7 +155,7 @@ export class discordBot {
         // Create chunks
         let partNumber: number = 0;
         const chunkUploader = async (chunk: Buffer) => {
-            const entry = await createPart(partNumber, chunk, uuid, this);
+            const entry = await createPart(partNumber, chunk, uuid, this, this.encryptionKey);
             if (aborted) return false;
             upload.addPart(entry);
             partNumber += 1;
