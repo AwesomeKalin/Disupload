@@ -5,7 +5,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "del build /Q && del dist /Q && tsc",
+    "build": "rm -r build && tsc",
     "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
 	"publish": "np --no-tests"
   },
@@ -14,12 +14,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/uuid": "^9.0.0",
     "discord.js": "^14.7.1",
     "lodash": "^4.17.21",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.0",
     "@types/yargs": "^17.0.19",
     "eslint": "^8.31.0",
     "jsmin": "^1.0.1",

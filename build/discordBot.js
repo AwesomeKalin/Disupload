@@ -176,7 +176,7 @@ export class discordBot {
                 .on('finish', () => {
                 var message;
                 if (name != location) {
-                    this.addFileToDir(removeItem(folders), upload);
+                    this.addFileToDir(folders, upload);
                     message = {
                         action: "uploadFile",
                         name: pushedToUpload,
