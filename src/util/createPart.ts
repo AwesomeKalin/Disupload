@@ -12,7 +12,7 @@ export async function createPart(partNumber: number, chunkBuffer: Buffer, fileUU
         partUUID: string;
     } = {action: "addPart", fileUUID: fileUUID, part: partNumber, partUUID: uuid};
     if (encryptionKey != undefined) {
-        chunkBuffer = encryptBuffer(chunkBuffer, encryptionKey);
+        chunkBuffer = await encryptBuffer(chunkBuffer, encryptionKey);
     }
     const message = await discordBot.sendMessageWithAttachment(JSON.stringify(messageContent), chunkBuffer, uuid);
     const chunk: filePart = new filePart(message, uuid, fileUUID);

@@ -98,7 +98,7 @@ export class httpServer {
                             https.get(partsOfFile[j].getUrl(), (res2) => {
                                 res2.pipe(new AsyncStreamChunker(async (data) => {
                                     if (this.password != undefined) {
-                                        data = decryptBuffer(data, this.password);
+                                        data = await decryptBuffer(data, this.password);
                                     }
                                     if (!res.write(data)) await new Promise((r) => res.once('drain', r));
                                 }))

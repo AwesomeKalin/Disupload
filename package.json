@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rm -r build && tsc",
+    "build-win": "del /Q build && tsc",
     "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
     "publish": "np --no-tests"
   },
@@ -16,9 +17,11 @@
   "dependencies": {
     "discord.js": "^14.7.1",
     "lodash": "^4.17.21",
+    "openpgp": "^5.7.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@openpgp/web-stream-tools": "^0.0.13",
     "@types/uuid": "^9.0.0",
     "@types/yargs": "^17.0.19",
     "eslint": "^8.31.0",
