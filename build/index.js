@@ -1,6 +1,3 @@
-export {};
-/*import {discordBot} from './discordFS'
-import HttpServer from './httpServer'
-
-module.exports = { discordBot, HttpServer }
-*/ 
+import { discordBot } from "./discordBot.js";
+import { httpServer } from "./httpServer.js";
+module.exports(discordBot, httpServer);
