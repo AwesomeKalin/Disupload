@@ -105,7 +105,7 @@ export class httpServer {
                                     if (this.password != undefined) {
                                         buffer = await decryptBuffer(buffer, this.password);
                                     }
-                                    if (!res.write(data)) await new Promise((r) => res.once('drain', r));
+                                    if (!res.write(buffer)) await new Promise((r) => res.once('drain', r));
                                     resolve('');
                                     res2.on('error', (err) => reject(err));
                                 });
