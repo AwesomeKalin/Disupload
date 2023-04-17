@@ -8,7 +8,7 @@
     "build": "rm -r build && tsc",
     "build-win": "del /Q build && tsc",
     "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
-    "publish": "np --no-tests",
+    "release": "np --no-tests",
     "lint": "eslint src/**"
   },
   "type": "module",
