@@ -2,7 +2,6 @@ import * as http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { AsyncStreamChunker } from './util/streamChunker.js';
 import * as https from 'https';
 import { decryptBuffer } from './util/encryption.js';
 // The frontend
@@ -91,15 +90,20 @@ export class httpServer {
                         // Typescript-ified and modified to work with my code by AwesomeKalin55
                         await new Promise((resolve, reject) => {
                             https.get(partsOfFile[j].getUrl(), (res2) => {
-                                res2.pipe(new AsyncStreamChunker(async (data) => {
+                                let data = [];
+                                let buffer;
+                                res2.on('data', (chunk) => {
+                                    data.push(chunk);
+                                }).on('end', async () => {
+                                    buffer = Buffer.concat(data);
                                     if (this.password != undefined) {
-                                        data = await decryptBuffer(data, this.password);
+                                        buffer = await decryptBuffer(buffer, this.password);
                                     }
-                                    if (!res.write(data))
+                                    if (!res.write(buffer))
                                         await new Promise((r) => res.once('drain', r));
-                                }));
-                                res2.on('error', (err) => reject(err));
-                                res2.on('end', () => resolve(''));
+                                    resolve('');
+                                    res2.on('error', (err) => reject(err));
+                                });
                             });
                         });
                         // Credit ends here

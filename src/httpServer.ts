@@ -106,14 +106,19 @@ export class httpServer {
                         // Typescript-ified and modified to work with my code by AwesomeKalin55
                         await new Promise((resolve, reject) => {
                             https.get(partsOfFile[j].getUrl(), (res2) => {
-                                res2.pipe(new AsyncStreamChunker(async (data) => {
+                                let data = [];
+                                let buffer: Buffer;
+                                res2.on('data', (chunk) => {
+                                    data.push(chunk);
+                                }).on('end', async () => {
+                                    buffer = Buffer.concat(data);
                                     if (this.password != undefined) {
-                                        data = await decryptBuffer(data, this.password);
+                                        buffer = await decryptBuffer(buffer, this.password);
                                     }
-                                    if (!res.write(data)) await new Promise((r) => res.once('drain', r));
-                                }))
-                                res2.on('error', (err) => reject(err));
-                                res2.on('end', () => resolve(''));
+                                    if (!res.write(buffer)) await new Promise((r) => res.once('drain', r));
+                                    resolve('');
+                                    res2.on('error', (err) => reject(err));
+                                });
                             });
                         });
                         // Credit ends here
