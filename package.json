@@ -1,10 +1,6 @@
 {
   "name": "disupload",
-<<<<<<< HEAD
-  "version": "0.1.2",
-=======
   "version": "0.1.4",
->>>>>>> bdeaf0c69f8a8ae495765f9e33cda3382ccc70f6
   "description": "",
   "main": "./src/index.ts",
   "scripts": {

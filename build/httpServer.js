@@ -4,6 +4,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import * as https from 'https';
 import { decryptBuffer } from './util/encryption.js';
+import { sanitizeUrl } from '@braintree/sanitize-url';
 // The frontend
 export class httpServer {
     port;
@@ -37,10 +38,11 @@ export class httpServer {
         });
     }
     async requestHandler(req, res) {
+        const url = decodeURIComponent(sanitizeUrl(req.url));
         console.log(req.method + ': ' + req.url);
         try {
             // Request Favicon
-            if (req.url == '/favicon.png' || req.url == '/favicon.ico') {
+            if (url == '/favicon.png' || url == '/favicon.ico') {
                 res.writeHead(200);
                 res.end(this.favicon);
             }
@@ -56,34 +58,46 @@ export class httpServer {
                 res.end();
             }
             else if (req.method == 'POST') {
-                await this.bot.uploadFile(req.url, req);
+                let url2;
+                if (url.charAt(url.length - 1) == '/') {
+                    url2 = url.slice(0, -1);
+                }
+                else
+                    url2 = url;
+                await this.bot.uploadFile(url2, req);
                 res.writeHead(303, { Connection: 'close', Location: '/', });
                 res.end();
             }
             else if (req.method == 'PUT') {
-                await this.bot.createFolder(req.url);
+                let url2;
+                if (url.charAt(url.length - 1) == '/') {
+                    url2 = url.slice(0, -1);
+                }
+                else
+                    url2 = url;
+                await this.bot.createFolder(url2);
                 res.writeHead(303, { Connection: 'close', Location: '/', });
                 res.end();
             }
-            else if (req.method == 'GET' && req.url == '/') {
+            else if (req.method == 'GET' && url == '/') {
                 const filesInFolder = this.bot.getFilesFromFolderAsString('.');
                 const webpage = this.renderWebPage(filesInFolder, '');
                 res.writeHead(200, { 'Content-Type': 'text/html' });
                 res.end(webpage);
             }
             else if (req.method == 'GET') {
-                let url;
-                if (req.url.charAt(req.url.length - 1) == '/') {
-                    url = req.url.slice(0, -1);
+                let url2;
+                if (url.charAt(url.length - 1) == '/') {
+                    url2 = url.slice(0, -1);
                 }
                 else
-                    url = req.url;
+                    url2 = url;
                 // 0 for file, 1 for dir, 2 for non-existant
-                const fileOrFolder = this.bot.fileOrFolder(url);
+                const fileOrFolder = this.bot.fileOrFolder(url2);
                 if (fileOrFolder == 0) {
-                    console.log(`Downloading ${req.url}`);
+                    console.log(`Downloading ${url}`);
                     //  Download File
-                    const fileToDownload = this.bot.getFileForDownload(url);
+                    const fileToDownload = this.bot.getFileForDownload(url2);
                     const partsOfFile = fileToDownload.parts;
                     for (var j = 0; j <= partsOfFile.length - 1; j++) {
                         // Credit to @forscht/ddrive
@@ -108,13 +122,13 @@ export class httpServer {
                         });
                         // Credit ends here
                     }
-                    console.log(`Download of ${req.url} completed`);
+                    console.log(`Download of ${url} completed`);
                     res.end();
                 }
                 else if (fileOrFolder == 1) {
                     // Get list of files and display them
-                    const filesInFolder = this.bot.getFilesFromFolderAsString(url);
-                    const webpage = this.renderWebPage(filesInFolder, url);
+                    const filesInFolder = this.bot.getFilesFromFolderAsString(url2);
+                    const webpage = this.renderWebPage(filesInFolder, url2);
                     res.writeHead(200, { 'Content-Type': 'text/html' });
                     res.end(webpage);
                 }
