@@ -5,7 +5,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { file } from './types/file.js';
 import { filePart } from './types/filePart.js';
-import { AsyncStreamChunker, StreamChunker } from './util/streamChunker.js';
 import * as https from 'https';
 import { decryptBuffer } from './util/encryption.js';
 import { sanitizeUrl } from '@braintree/sanitize-url';
