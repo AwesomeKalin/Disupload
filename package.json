@@ -8,13 +8,15 @@
     "build": "rm -r build && tsc",
     "build-win": "del /Q build && tsc",
     "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
-    "publish": "np --no-tests"
+    "publish": "np --no-tests",
+    "lint": "eslint src/**"
   },
   "type": "module",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@braintree/sanitize-url": "^6.0.2",
     "discord.js": "^14.7.1",
     "lodash": "^4.17.21",
     "openpgp": "^5.7.0",
@@ -24,6 +26,8 @@
     "@openpgp/web-stream-tools": "^0.0.13",
     "@types/uuid": "^9.0.0",
     "@types/yargs": "^17.0.19",
+    "@typescript-eslint/eslint-plugin": "^5.58.0",
+    "@typescript-eslint/parser": "^5.58.0",
     "eslint": "^8.31.0",
     "jsmin": "^1.0.1",
     "np": "^7.6.4",
