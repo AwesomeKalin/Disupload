@@ -48,7 +48,7 @@ export class httpServer {
     }
 
     async requestHandler(req: any, res: any) {
-        const url: string = decodeURIComponent(sanitizeUrl(req.url));
+        const url: string = decodeURI(sanitizeUrl(req.url));
         console.log(req.method + ': ' + req.url);
 
         try {

@@ -38,7 +38,7 @@ export class httpServer {
         });
     }
     async requestHandler(req, res) {
-        const url = decodeURIComponent(sanitizeUrl(req.url));
+        const url = decodeURI(sanitizeUrl(req.url));
         console.log(req.method + ': ' + req.url);
         try {
             // Request Favicon
