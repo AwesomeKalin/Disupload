@@ -135,7 +135,6 @@ export class discordBot {
             return false;
         this.uploadLock.push(location);
         const pushedToUpload = location;
-        console.log(`Uploading to ${location}`);
         // Extract name from location
         location = location.slice(1);
         let name;
@@ -143,10 +142,17 @@ export class discordBot {
         if (location.includes('/')) {
             folders = location.split('/');
             name = folders[folders.length - 1];
+            let checkList;
+            for (var i = 0; i < folders.length; i++) {
+                checkList += '/' + folders[i];
+                if (!this.getFolder(checkList))
+                    return false;
+            }
         }
         else {
             name = location;
         }
+        console.log(`Uploading to ${location}`);
         // Create uuid
         const uuid = uuidv4();
         // Create file
@@ -239,6 +245,12 @@ export class discordBot {
         if (location.includes('/')) {
             folders = location.split('/');
             name = folders[folders.length - 1];
+            let checkList;
+            for (var i = 0; i < folders.length; i++) {
+                checkList += '/' + folders[i];
+                if (!this.getFolder(checkList))
+                    return false;
+            }
         }
         else {
             name = location;

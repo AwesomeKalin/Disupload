@@ -7,7 +7,7 @@ export class StreamChunker extends Transform {
     chunks;
     constructor() {
         super();
-        this.chunkSize = 7864320;
+        this.chunkSize = 25690112;
         this.fill = 0;
         this.chunks = [];
     }
