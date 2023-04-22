@@ -143,7 +143,7 @@ export class discordBot {
             folders = location.split('/');
             name = folders[folders.length - 1];
             let checkList;
-            for (var i = 0; i < folders.length; i++) {
+            for (var i = 0; i < folders.length - 1; i++) {
                 checkList += '/' + folders[i];
                 if (!this.getFolder(checkList))
                     return false;
@@ -237,7 +237,6 @@ export class discordBot {
             return false;
         this.uploadLock.push(location);
         const pushedToUpload = location;
-        console.log(`Creating folder at ${location}`);
         // Extract name from location
         location = location.slice(1);
         let name;
@@ -246,7 +245,7 @@ export class discordBot {
             folders = location.split('/');
             name = folders[folders.length - 1];
             let checkList;
-            for (var i = 0; i < folders.length; i++) {
+            for (var i = 0; i < folders.length - 1; i++) {
                 checkList += '/' + folders[i];
                 if (!this.getFolder(checkList))
                     return false;
@@ -255,6 +254,7 @@ export class discordBot {
         else {
             name = location;
         }
+        console.log(`Creating folder at ${location}`);
         // Create uuid
         const uuid = uuidv4();
         // Create directory
