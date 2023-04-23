@@ -144,8 +144,11 @@ export class discordBot {
             name = folders[folders.length - 1];
             let checkList;
             for (var i = 0; i < folders.length - 1; i++) {
-                checkList += '/' + folders[i];
-                console.log(checkList);
+                if (i == 0) {
+                    checkList = '/' + folders[i];
+                }
+                else
+                    checkList += '/' + folders[i];
                 console.log(this.getFolder(checkList));
                 if (!this.getFolder(checkList))
                     return false;
@@ -253,7 +256,6 @@ export class discordBot {
                 }
                 else
                     checkList += '/' + folders[i];
-                console.log(checkList);
                 if (!this.getFolder(checkList))
                     return false;
             }
