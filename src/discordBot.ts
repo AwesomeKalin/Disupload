@@ -144,7 +144,10 @@ export class discordBot {
             name = folders[folders.length - 1];
             let checkList: string;
             for (var i = 0; i < folders.length - 1; i++) {
-                checkList += '/' + folders[i];
+                if (i == 0) {
+                    checkList = '/' + folders[i];
+                } else checkList += '/' + folders[i];
+                console.log(this.getFolder(checkList))
                 if (!this.getFolder(checkList)) return false;
             }
         } else {
@@ -252,7 +255,9 @@ export class discordBot {
             name = folders[folders.length - 1];
             let checkList: string;
             for (var i = 0; i < folders.length - 1; i++) {
-                checkList += '/' + folders[i];
+                if (i == 0) {
+                    checkList = '/' + folders[i];
+                } else checkList += '/' + folders[i];
                 if (!this.getFolder(checkList)) return false;
             }
         } else {
