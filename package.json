@@ -19,7 +19,7 @@
     "@braintree/sanitize-url": "^6.0.2",
     "discord.js": "^14.9.0",
     "lodash": "^4.17.21",
-    "openpgp": "^5.8.0",
+    "openpgp": "^5.9.0",
     "uuid": "^9.0.0"
   },
   "devDependencies": {
