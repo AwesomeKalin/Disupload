@@ -103,7 +103,7 @@ export class httpServer {
 
                     if (fileToDownload === false) {
                         res.writeHead(400, { 'Content-Type': 'text/html' });
-                        res.end('404 File Does Not Exist');
+                        res.end(this.error404);
                     } else {
                         const partsOfFile: Array<filePart> = fileToDownload.parts;
                         for (var j = 0; j <= partsOfFile.length - 1; j++) {
@@ -136,11 +136,18 @@ export class httpServer {
                     const filesInFolder: Array<string> | false = this.bot.getFilesFromFolderAsString(url2);
                     if (filesInFolder === false) {
                         res.writeHead(400, { 'Content-Type': 'text/html' });
+                        res.end(this.error404);
                     } else {
                         const webpage: string = this.renderWebPage(filesInFolder, url2);
                         res.writeHead(200, { 'Content-Type': 'text/html' });
                         res.end(webpage);
                     }
+                } else if (req.method === 'DELETE' && url === '/') {
+                    res.writeHead(500, { 'Content-Type': 'text/html' });
+                    res.end('Cannot delete root');
+                } else if (req.method === 'DELETE') {
+                    res.writeHead(303, { Connection: 'close', Location: '/', });
+                    res.end();
                 } else {
                     res.writeHead(404);
                     res.end(this.error404);
