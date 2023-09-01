@@ -1,8 +1,7 @@
 /// <reference types="node" resolution-mode="require"/>
-import { Client } from 'discord.js';
+import { Client, TextChannel } from 'discord.js';
 import { directory } from './types/directory.js';
 import { file } from './types/file.js';
-import { TextChannel } from 'discord.js';
 export declare class discordBot {
     channelId: string;
     token: string;
@@ -25,4 +24,5 @@ export declare class discordBot {
     fileOrFolder(location: string): 0 | 1 | 2;
     getFileForDownload(location: string): false | file;
     getFilesFromFolderAsString(location: string): false | string[];
+    deleteFileOrFolder(location: string): Promise<boolean>;
 }

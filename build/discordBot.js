@@ -10,6 +10,7 @@ import { addFileToFolder, addFolderToFolder } from './util/addFileToFolder.js';
 import { createFolder } from './util/createFolder.js';
 import { filePart } from './types/filePart.js';
 import { getAllMessages } from './util/getAllMessagesFromChannel.js';
+import { deleteInFolder } from './util/deleteInFolder.js';
 // The Discord Bot
 export class discordBot {
     channelId;
@@ -96,6 +97,31 @@ export class discordBot {
                     }
                     else {
                         this.addFileToDir(folders, fileToAdd);
+                    }
+                }
+                else if (messageJson["action"] == 'delete') {
+                    let location = messageJson["name"];
+                    const origLocation = location;
+                    location = location.slice(1);
+                    if (location.includes('/')) {
+                        const folders = location.split('/');
+                        if (!checkIfFileExists(this.root.directories, 0, folders) || !checkIfFolderExists(this.root.directories, 0, folders)) {
+                            //@ts-expect-error
+                            const delAttempt = deleteInFolder(this.root, 0, folders);
+                            this.root = delAttempt;
+                        }
+                    }
+                    else {
+                        for (var i = 0; i < this.root.directories.length; i++) {
+                            if (this.root.directories[i].getName() == location) {
+                                this.root.directories = deleteFromArray(this.root.directories, i);
+                            }
+                        }
+                        for (var i = 0; i < this.root.files.length; i++) {
+                            if (this.root.files[i].getName() == location) {
+                                this.root.files = deleteFromArray(this.root.files, i);
+                            }
+                        }
                     }
                 }
             }
@@ -380,5 +406,38 @@ export class discordBot {
             }
             return stringList;
         }
+    }
+    async deleteFileOrFolder(location) {
+        const origLocation = location;
+        location = location.slice(1);
+        if (location.includes('/')) {
+            const folders = location.split('/');
+            if (!checkIfFileExists(this.root.directories, 0, folders) || !checkIfFolderExists(this.root.directories, 0, folders)) {
+                const delAttempt = deleteInFolder(this.root, 0, folders);
+                if (delAttempt === false) {
+                    return false;
+                }
+                this.root = delAttempt;
+                await this.sendMessage(JSON.stringify({ action: "delete", name: origLocation }));
+                return true;
+            }
+        }
+        else {
+            for (var i = 0; i < this.root.directories.length; i++) {
+                if (this.root.directories[i].getName() == location) {
+                    this.root.directories = deleteFromArray(this.root.directories, i);
+                    await this.sendMessage(JSON.stringify({ action: "delete", name: location }));
+                    return true;
+                }
+            }
+            for (var i = 0; i < this.root.files.length; i++) {
+                if (this.root.files[i].getName() == location) {
+                    this.root.files = deleteFromArray(this.root.files, i);
+                    await this.sendMessage(JSON.stringify({ action: "delete", name: location }));
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
