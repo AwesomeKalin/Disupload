@@ -1,41 +1,44 @@
 {
-  "name": "disupload",
-  "version": "0.1.13",
-  "description": "",
-  "main": "./build/index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -r build && tsc",
-    "build-win": "del /Q build && tsc",
-    "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
-    "upload": "np --no-tests --no-cleanup",
-    "lint": "eslint src/**"
-  },
-  "type": "module",
-  "keywords": [],
-  "author": "AwesomeKain55",
-  "license": "MIT",
-  "dependencies": {
-    "@braintree/sanitize-url": "^6.0.4",
-    "discord.js": "^14.13.0",
-    "lodash": "^4.17.21",
-    "openpgp": "^5.10.1",
-    "uuid": "^9.0.0"
-  },
-  "devDependencies": {
-    "@openpgp/web-stream-tools": "^0.0.13",
-    "@types/node": "^20.5.7",
-    "@types/uuid": "^9.0.3",
-    "@types/yargs": "^17.0.24",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
-    "eslint": "^8.48.0",
-    "jsmin": "^1.0.1",
-    "np": "^8.0.4",
-    "typescript": "^5.2.2",
-    "yargs": "^17.7.2"
-  },
-  "bin": {
-    "disupload": "./build/disupload.js"
-  }
+    "name": "disupload",
+    "version": "0.1.13",
+    "description": "",
+    "main": "./build/index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "rm -r build && tsc",
+        "build-win": "del /Q build && tsc",
+        "minify": "jsmin -o ./dist/discordBot.js ./build/discordBot.js && jsmin -o ./dist/disupload.js ./build/disupload.js && jsmin -o ./dist/httpServer.js ./build/httpServer.js && jsmin -o ./dist/index.js ./build/index.js && jsmin -o ./dist/types/directory.js ./build/types/directory.js && jsmin -o ./dist/types/file.js ./build/types/file.js && jsmin -o ./dist/types/filePart.js ./build/types/filePart.js && jsmin -o ./dist/util/deleteFromArray.js ./build/util/deleteFromArray.js && jsmin -o ./dist/util/checkIfFolderExists.js ./build/util/checkIfFolderExists.js",
+        "upload": "np --no-tests --no-cleanup",
+        "lint": "eslint src/**"
+    },
+    "type": "module",
+    "keywords": [],
+    "author": "AwesomeKain55",
+    "license": "MIT",
+    "dependencies": {
+        "@braintree/sanitize-url": "^6.0.4",
+        "discord.js": "^14.13.0",
+        "lodash": "^4.17.21",
+        "openpgp": "^5.10.1",
+        "uuid": "^9.0.0"
+    },
+    "devDependencies": {
+        "@openpgp/web-stream-tools": "^0.0.13",
+        "@types/node": "^20.5.7",
+        "@types/uuid": "^9.0.3",
+        "@types/yargs": "^17.0.24",
+        "@typescript-eslint/eslint-plugin": "^6.5.0",
+        "@typescript-eslint/parser": "^6.5.0",
+        "eslint": "^8.48.0",
+        "jsmin": "^1.0.1",
+        "np": "^8.0.4",
+        "typescript": "^5.2.2",
+        "yargs": "^17.7.2"
+    },
+    "bin": {
+        "disupload": "./build/disupload.js"
+    },
+    "engines": {
+        "node": ">=16.20"
+    }
 }
