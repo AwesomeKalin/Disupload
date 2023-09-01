@@ -23,7 +23,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@openpgp/web-stream-tools": "^0.0.14",
+    "@openpgp/web-stream-tools": "^0.0.13",
     "@types/node": "^20.5.7",
     "@types/uuid": "^9.0.3",
     "@types/yargs": "^17.0.24",

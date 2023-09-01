@@ -80,6 +80,7 @@ export class httpServer {
                 res.end();
             }
             else if (req.method == 'GET' && url == '/') {
+                //@ts-expect-error
                 const filesInFolder = this.bot.getFilesFromFolderAsString('.');
                 const webpage = this.renderWebPage(filesInFolder, '');
                 res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -98,39 +99,50 @@ export class httpServer {
                     console.log(`Downloading ${url}`);
                     //  Download File
                     const fileToDownload = this.bot.getFileForDownload(url2);
-                    const partsOfFile = fileToDownload.parts;
-                    for (var j = 0; j <= partsOfFile.length - 1; j++) {
-                        // Credit to @forscht/ddrive
-                        // Typescript-ified and modified to work with my code by AwesomeKalin55
-                        await new Promise((resolve, reject) => {
-                            https.get(partsOfFile[j].getUrl(), (res2) => {
-                                let data = [];
-                                let buffer;
-                                res2.on('data', (chunk) => {
-                                    data.push(chunk);
-                                }).on('end', async () => {
-                                    buffer = Buffer.concat(data);
-                                    if (this.password != undefined) {
-                                        buffer = await decryptBuffer(buffer, this.password);
-                                    }
-                                    if (!res.write(buffer))
-                                        await new Promise((r) => res.once('drain', r));
-                                    resolve('');
-                                    res2.on('error', (err) => reject(err));
+                    if (fileToDownload === false) {
+                        res.writeHead(400, { 'Content-Type': 'text/html' });
+                        res.end('404 File Does Not Exist');
+                    }
+                    else {
+                        const partsOfFile = fileToDownload.parts;
+                        for (var j = 0; j <= partsOfFile.length - 1; j++) {
+                            // Credit to @forscht/ddrive
+                            // Typescript-ified and modified to work with my code by AwesomeKalin55
+                            await new Promise((resolve, reject) => {
+                                https.get(partsOfFile[j].getUrl(), (res2) => {
+                                    let data = [];
+                                    let buffer;
+                                    res2.on('data', (chunk) => {
+                                        data.push(chunk);
+                                    }).on('end', async () => {
+                                        buffer = Buffer.concat(data);
+                                        if (this.password != undefined) {
+                                            buffer = await decryptBuffer(buffer, this.password);
+                                        }
+                                        if (!res.write(buffer))
+                                            await new Promise((r) => res.once('drain', r));
+                                        resolve('');
+                                        res2.on('error', (err) => reject(err));
+                                    });
                                 });
                             });
-                        });
-                        // Credit ends here
+                            // Credit ends here
+                        }
+                        console.log(`Download of ${url} completed`);
+                        res.end();
                     }
-                    console.log(`Download of ${url} completed`);
-                    res.end();
                 }
                 else if (fileOrFolder == 1) {
                     // Get list of files and display them
                     const filesInFolder = this.bot.getFilesFromFolderAsString(url2);
-                    const webpage = this.renderWebPage(filesInFolder, url2);
-                    res.writeHead(200, { 'Content-Type': 'text/html' });
-                    res.end(webpage);
+                    if (filesInFolder === false) {
+                        res.writeHead(400, { 'Content-Type': 'text/html' });
+                    }
+                    else {
+                        const webpage = this.renderWebPage(filesInFolder, url2);
+                        res.writeHead(200, { 'Content-Type': 'text/html' });
+                        res.end(webpage);
+                    }
                 }
                 else {
                     res.writeHead(404);

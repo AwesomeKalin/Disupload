@@ -14,7 +14,7 @@ export declare class discordBot {
     encryptionKey: string;
     constructor(channelId: string, token: string, encryptionKey?: string);
     start(): Promise<void>;
-    getFile(location: string): any;
+    getFile(location: string): boolean;
     uploadFile(location: string, stream: any): Promise<unknown>;
     sendMessage(contents: string): Promise<void>;
     sendMessageWithAttachment(message: string, file: Buffer, fileName: string): Promise<string>;
@@ -23,6 +23,6 @@ export declare class discordBot {
     getFolder(location: string): boolean;
     addFolderToDir(location: Array<string>, folder: directory): void;
     fileOrFolder(location: string): 0 | 1 | 2;
-    getFileForDownload(location: string): any;
-    getFilesFromFolderAsString(location: string): string[];
+    getFileForDownload(location: string): false | file;
+    getFilesFromFolderAsString(location: string): false | string[];
 }

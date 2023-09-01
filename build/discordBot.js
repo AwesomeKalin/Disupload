@@ -348,6 +348,9 @@ export class discordBot {
         if (location.includes('/')) {
             const folders = location.split('/');
             const folderList = getExistingFolder(this.root.getDirectoryList(), 0, folders);
+            if (folderList === false) {
+                return false;
+            }
             const dirListToShow = folderList.getDirectoryList();
             const fileList = folderList.getFileList();
             let stringList = [];
