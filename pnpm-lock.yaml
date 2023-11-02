@@ -16,7 +16,7 @@ dependencies:
     version: 4.17.21
   openpgp:
     specifier: ^5.10.1
-    version: 5.10.1
+    version: 5.11.0
   uuid:
     specifier: ^9.0.0
     version: 9.0.0
@@ -2521,8 +2521,8 @@ packages:
       is-wsl: 2.2.0
     dev: true
 
-  /openpgp@5.10.1:
-    resolution: {integrity: sha512-SR5Ft+ej51d0+p53ld5Ney0Yiz0y8Mh1YYLJrvpRMbTaNhvS1QcDX0Oq1rW9sjBnQXtgrpWw2Zve3rm7K5C/pw==}
+  /openpgp@5.11.0:
+    resolution: {integrity: sha512-hytHsxIPtRhuh6uAmoBUThHSwHSX3imLu7x4453T+xkVqIw49rl22MRD4KQIAQdCDoVdouejzYgcuLmMA/2OAA==}
     engines: {node: '>= 8.0.0'}
     dependencies:
       asn1.js: 5.4.1
