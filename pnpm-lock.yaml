@@ -23,8 +23,8 @@ dependencies:
 
 devDependencies:
   '@openpgp/web-stream-tools':
-    specifier: ^0.0.13
-    version: 0.0.13(typescript@5.2.2)
+    specifier: ^0.1.1
+    version: 0.1.1(typescript@5.2.2)
   '@types/node':
     specifier: ^20.5.7
     version: 20.8.10
@@ -242,8 +242,9 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@openpgp/web-stream-tools@0.0.13(typescript@5.2.2):
-    resolution: {integrity: sha512-VQ0O0lUcD9ilLcMLQMJMgPhp8fDgMd4copd+UhSBGjud0vbI1ONQ3ffAhixEMml/AApLJtqCpd7PJcccPliFSA==}
+  /@openpgp/web-stream-tools@0.1.1(typescript@5.2.2):
+    resolution: {integrity: sha512-1WkV+z78S8DJNlUiCPxSjsna6gfAGCVuepL2KUDlBztXzhvplwWr4lAvsWcYzFkHykaFoCSOV9ssiRRq7QzydQ==}
+    engines: {node: '>= 16.5.0'}
     peerDependencies:
       typescript: '>=4.2'
     peerDependenciesMeta:
