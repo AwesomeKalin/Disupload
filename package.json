@@ -20,7 +20,7 @@
         "discord.js": "^14.13.0",
         "lodash": "^4.17.21",
         "openpgp": "^5.10.1",
-        "uuid": "^9.0.0"
+        "uuid": "^9.0.1"
     },
     "devDependencies": {
         "@openpgp/web-stream-tools": "^0.0.13",
