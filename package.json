@@ -18,7 +18,7 @@
     "dependencies": {
         "@braintree/sanitize-url": "^6.0.4",
         "discord.js": "^14.13.0",
-        "lodash": "^4.17.21",
+        "lodash": "^4.17.23",
         "openpgp": "^5.10.1",
         "uuid": "^9.0.0"
     },
